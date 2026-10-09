@@ -6,7 +6,11 @@ on:
 
 jobs:
   deploy:
-    runs-on: ubuntu-24.04
+    # Windows runner on the developer PC. That network can SSH to the VPS.
+    runs-on: [self-hosted, Windows, X64]
+    defaults:
+      run:
+        shell: powershell
     steps:
       - uses: actions/checkout@v5
 
@@ -24,36 +28,71 @@ jobs:
       # Pack the standalone server, static files, and public assets.
       - name: Pack standalone
         run: |
-          mkdir -p deploy/.next
-          cp -a .next/standalone/. deploy/
-          cp -a .next/static deploy/.next/static
-          cp -a public deploy/public
-          tar -C deploy -czf standalone.tgz .
+          $ErrorActionPreference = "Stop"
+          if (Test-Path deploy) { Remove-Item deploy -Recurse -Force }
+          New-Item -ItemType Directory -Path deploy | Out-Null
+          $standaloneTar = Join-Path $env:RUNNER_TEMP "standalone.tar"
+          $staticTar = Join-Path $env:RUNNER_TEMP "static.tar"
+          $publicTar = Join-Path $env:RUNNER_TEMP "public.tar"
+          tar -C .next/standalone -cf $standaloneTar .
+          if ($LASTEXITCODE -ne 0) { throw "pack standalone failed" }
+          tar -C deploy -xf $standaloneTar
+          if ($LASTEXITCODE -ne 0) { throw "unpack standalone failed" }
+          New-Item -ItemType Directory -Force -Path deploy/.next | Out-Null
+          tar -C .next -cf $staticTar static
+          if ($LASTEXITCODE -ne 0) { throw "pack static failed" }
+          tar -C deploy/.next -xf $staticTar
+          if ($LASTEXITCODE -ne 0) { throw "unpack static failed" }
+          tar -C . -cf $publicTar public
+          if ($LASTEXITCODE -ne 0) { throw "pack public failed" }
+          tar -C deploy -xf $publicTar
+          if ($LASTEXITCODE -ne 0) { throw "unpack public failed" }
+          $archive = Join-Path (Get-Location) "standalone.tgz"
+          tar -C deploy -czf $archive .
+          if ($LASTEXITCODE -ne 0) { throw "create archive failed" }
 
-      - name: Upload
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USER }}
-          key: ${{ secrets.VPS_SSH_KEY }}
-          source: standalone.tgz
-          target: /home/devlive.online/app
-
-      - name: Restart
-        uses: appleboy/ssh-action@v1.2.2
-        with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USER }}
-          key: ${{ secrets.VPS_SSH_KEY }}
-          script: |
-            cd /home/devlive.online/app
-            tar -xzf standalone.tgz
-            rm -f standalone.tgz
-            export PORT=3000
-            export HOSTNAME=0.0.0.0
-            if pm2 describe english >/dev/null 2>&1; then
-              pm2 restart english --update-env
-            else
-              pm2 start server.js --name english
-            fi
-            pm2 save
+      - name: Upload and restart
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_USER: ${{ secrets.VPS_USER }}
+          VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+        run: |
+          $ErrorActionPreference = "Stop"
+          $keyPath = Join-Path $env:RUNNER_TEMP "vps_deploy_key"
+          $scriptPath = Join-Path $env:RUNNER_TEMP "restart.sh"
+          $me = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name
+          $utf8 = New-Object System.Text.UTF8Encoding $false
+          $raw = $env:VPS_SSH_KEY -replace "`r`n","`n" -replace "`r","`n"
+          if (-not $raw.EndsWith("`n")) { $raw += "`n" }
+          [System.IO.File]::WriteAllText($keyPath, $raw, $utf8)
+          & icacls.exe $keyPath /inheritance:r | Out-Null
+          & icacls.exe $keyPath /grant:r "${me}:(R)" | Out-Null
+          $remote = @(
+            'set -euo pipefail',
+            'export PATH="/usr/local/bin:/usr/bin:$PATH"',
+            'if [ -s "$HOME/.nvm/nvm.sh" ]; then . "$HOME/.nvm/nvm.sh"; fi',
+            'cd /home/devlive.online/app',
+            'tar -xzf standalone.tgz',
+            'rm -f standalone.tgz',
+            'export PORT=3000',
+            'export HOSTNAME=0.0.0.0',
+            'if pm2 describe english >/dev/null 2>&1; then pm2 restart english --update-env; else pm2 start server.js --name english; fi',
+            'pm2 save'
+          ) -join "`n"
+          [System.IO.File]::WriteAllText($scriptPath, $remote + "`n", $utf8)
+          $ssh = "$env:SystemRoot\System32\OpenSSH\ssh.exe"
+          $scp = "$env:SystemRoot\System32\OpenSSH\scp.exe"
+          $target = "$env:VPS_USER@$env:VPS_HOST"
+          $sshOpts = @("-i", $keyPath, "-o", "StrictHostKeyChecking=accept-new", "-o", "BatchMode=yes")
+          try {
+            & $ssh @sshOpts $target "mkdir -p /home/devlive.online/app"
+            if ($LASTEXITCODE -ne 0) { throw "ssh mkdir failed" }
+            & $scp @sshOpts standalone.tgz "${target}:/home/devlive.online/app/standalone.tgz"
+            if ($LASTEXITCODE -ne 0) { throw "scp failed" }
+            & $scp @sshOpts $scriptPath "${target}:/tmp/english-restart.sh"
+            if ($LASTEXITCODE -ne 0) { throw "scp restart script failed" }
+            & $ssh @sshOpts $target "bash /tmp/english-restart.sh"
+            if ($LASTEXITCODE -ne 0) { throw "remote restart failed" }
+          } finally {
+            Remove-Item -Force $keyPath, $scriptPath -ErrorAction SilentlyContinue
+          }
