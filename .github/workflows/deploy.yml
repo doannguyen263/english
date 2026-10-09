@@ -12,14 +12,42 @@ jobs:
       run:
         shell: powershell
     steps:
+      # checkout cleans ignored files, including node_modules. Reset first and
+      # keep that folder so an unchanged lockfile can skip npm ci.
+      - name: Keep node_modules across checkouts
+        run: |
+          if (Test-Path .git) {
+            git reset --hard
+            git clean -ffdx -e node_modules
+          }
+
       - uses: actions/checkout@v5
+        with:
+          clean: false
 
       - uses: actions/setup-node@v5
         with:
           node-version: 20
           cache: npm
 
-      - run: npm ci
+      - name: Install dependencies when the lockfile changes
+        run: |
+          $ErrorActionPreference = "Stop"
+          $hash = (Get-FileHash -Algorithm SHA256 "package-lock.json").Hash
+          $stampDir = if ($env:RUNNER_TOOL_CACHE) { $env:RUNNER_TOOL_CACHE } else { Join-Path $env:LOCALAPPDATA "english-runner" }
+          $stampDir = Join-Path $stampDir "english-npm"
+          $stamp = Join-Path $stampDir "package-lock.sha256"
+          $previous = ""
+          if (Test-Path $stamp) { $previous = (Get-Content -Raw $stamp).Trim() }
+          if ((Test-Path "node_modules") -and ($previous -eq $hash)) {
+            Write-Host "package-lock.json unchanged, skipping npm ci"
+          } else {
+            Write-Host "package-lock.json changed, running npm ci"
+            npm ci
+            if ($LASTEXITCODE -ne 0) { throw "npm ci failed" }
+            New-Item -ItemType Directory -Force -Path $stampDir | Out-Null
+            Set-Content -Path $stamp -Value $hash -NoNewline
+          }
 
       - run: npm run build
         env:
