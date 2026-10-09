@@ -1,0 +1,59 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      - run: npm run build
+        env:
+          NEXT_PUBLIC_APP_URL: https://devlive.online
+
+      # Pack the standalone server, static files, and public assets.
+      - name: Pack standalone
+        run: |
+          mkdir -p deploy/.next
+          cp -a .next/standalone/. deploy/
+          cp -a .next/static deploy/.next/static
+          cp -a public deploy/public
+          tar -C deploy -czf standalone.tgz .
+
+      - name: Upload
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          source: standalone.tgz
+          target: /home/devlive.online/app
+
+      - name: Restart
+        uses: appleboy/ssh-action@v1.2.2
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            cd /home/devlive.online/app
+            tar -xzf standalone.tgz
+            rm -f standalone.tgz
+            export PORT=3000
+            export HOSTNAME=0.0.0.0
+            if pm2 describe english >/dev/null 2>&1; then
+              pm2 restart english --update-env
+            else
+              pm2 start server.js --name english
+            fi
+            pm2 save
