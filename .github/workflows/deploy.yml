@@ -39,14 +39,17 @@ jobs:
           $stamp = Join-Path $stampDir "package-lock.sha256"
           $previous = ""
           if (Test-Path $stamp) { $previous = (Get-Content -Raw $stamp).Trim() }
+          $utf8 = New-Object System.Text.UTF8Encoding $false
           if ((Test-Path "node_modules") -and ($previous -eq $hash)) {
             Write-Host "package-lock.json unchanged, skipping npm ci"
+            [System.IO.File]::AppendAllText($env:GITHUB_ENV, "UPLOAD_NODE_MODULES=false`n", $utf8)
           } else {
             Write-Host "package-lock.json changed, running npm ci"
             npm ci
             if ($LASTEXITCODE -ne 0) { throw "npm ci failed" }
             New-Item -ItemType Directory -Force -Path $stampDir | Out-Null
             Set-Content -Path $stamp -Value $hash -NoNewline
+            [System.IO.File]::AppendAllText($env:GITHUB_ENV, "UPLOAD_NODE_MODULES=true`n", $utf8)
           }
 
       - run: npm run build
@@ -75,6 +78,15 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw "pack public failed" }
           tar -C deploy -xf $publicTar
           if ($LASTEXITCODE -ne 0) { throw "unpack public failed" }
+          # Same packages stay on the VPS. Omit node_modules so the archive stays small.
+          if ($env:UPLOAD_NODE_MODULES -eq "false") {
+            if (Test-Path deploy/node_modules) {
+              Remove-Item -Recurse -Force deploy/node_modules
+            }
+            Write-Host "Lockfile unchanged, omitting node_modules"
+          } else {
+            Write-Host "Lockfile changed, packing node_modules"
+          }
           $archive = Join-Path (Get-Location) "standalone.tgz"
           tar -C deploy -czf $archive .
           if ($LASTEXITCODE -ne 0) { throw "create archive failed" }
@@ -95,11 +107,16 @@ jobs:
           [System.IO.File]::WriteAllText($keyPath, $raw, $utf8)
           & icacls.exe $keyPath /inheritance:r | Out-Null
           & icacls.exe $keyPath /grant:r "${me}:(R)" | Out-Null
+          # Replace traced packages only when this archive contains a new node_modules.
+          $removeNodeModules = if ($env:UPLOAD_NODE_MODULES -eq "true") { 'rm -rf node_modules' } else { ':' }
           $remote = @(
             'set -euo pipefail',
             'export PATH="/usr/local/bin:/usr/bin:$PATH"',
             'if [ -s "$HOME/.nvm/nvm.sh" ]; then . "$HOME/.nvm/nvm.sh"; fi',
             'cd /home/devlive.online/app',
+            'if pm2 describe english >/dev/null 2>&1; then pm2 stop english; fi',
+            'rm -rf .next public',
+            $removeNodeModules,
             'tar -xzf standalone.tgz',
             'rm -f standalone.tgz',
             'export PORT=3000',
