@@ -55,7 +55,6 @@ jobs:
       - run: npm run build
         env:
           NEXT_PUBLIC_APP_URL: https://devlive.online
-          NEXT_PUBLIC_APP_URL: https://devlive.online
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
           BETTER_AUTH_URL: https://devlive.online
