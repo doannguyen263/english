@@ -3,6 +3,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
+import { loginSchema, registerSchema } from "./auth-schema";
 
 type AuthFormProps = {
   mode: "login" | "register";
@@ -21,20 +22,15 @@ export function AuthForm({ mode }: AuthFormProps) {
     event.preventDefault();
     setError("");
 
-    if (
-      !email.trim() ||
-      !password.trim() ||
-      (mode === "register" && !name.trim())
-    ) {
-      setError("Điền đủ các ô.");
+    const schema = mode === "register" ? registerSchema : loginSchema;
+
+    const raw = mode === "register" ? { name, email, password } : { email, password };
+    const parsed = schema.safeParse(raw);
+
+    if (!parsed.success) {
+      setError(parsed.error.issues[0]?.message ?? "Dữ liệu không hợp lệ.");
       return;
     }
-
-    if (mode === "register" && password.length < 8) {
-      setError("Mật khẩu cần ít nhất 8 ký tự.");
-      return;
-    }
-
     setPending(true);
 
     const result =
