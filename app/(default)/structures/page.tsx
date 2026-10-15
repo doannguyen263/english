@@ -1,4 +1,9 @@
+import type { Metadata } from "next";
 import { StructureBox } from "@/features/structures/StructureBox";
+
+export const metadata: Metadata = {
+  title: "Cấu trúc câu",
+};
 
 export default function StructuresPage() {
   return (
