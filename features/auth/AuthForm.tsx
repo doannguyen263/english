@@ -1,9 +1,10 @@
 "use client";
-import { useState } from "react";
+import { useLayoutEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
 import { loginSchema, registerSchema } from "./auth-schema";
+import { PasswordInput } from "@/app/components/ui/PasswordInput";
 
 type AuthFormProps = {
   mode: "login" | "register";
@@ -17,6 +18,14 @@ export function AuthForm({ mode }: AuthFormProps) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  useLayoutEffect(() => {
+    return () => {
+      setName("");
+      setEmail("");
+      setPassword("");
+      setError(null);
+    };
+  }, []);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -98,15 +107,14 @@ export function AuthForm({ mode }: AuthFormProps) {
       </label>
 
       <label className="flex flex-col gap-1 text-sm">
-        Mật khẩu
-        <input
-          type="password"
+          <PasswordInput
           value={password}
-          onChange={(event) => setPassword(event.target.value)}
-          className={inputClass}
+          onChange={setPassword}
           autoComplete={
             mode === "register" ? "new-password" : "current-password"
           }
+          className={inputClass}
+          disabled={pending}
         />
       </label>
       {error ? <p className="text-sm text-red-600">{error}</p> : null}
