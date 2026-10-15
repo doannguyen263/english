@@ -24,7 +24,8 @@ export function AuthForm({ mode }: AuthFormProps) {
 
     const schema = mode === "register" ? registerSchema : loginSchema;
 
-    const raw = mode === "register" ? { name, email, password } : { email, password };
+    const raw =
+      mode === "register" ? { name, email, password } : { email, password };
     const parsed = schema.safeParse(raw);
 
     if (!parsed.success) {
@@ -50,7 +51,9 @@ export function AuthForm({ mode }: AuthFormProps) {
     setPending(false);
 
     if (result.error) {
-      setError(result.error.message ?? "Không đăng nhập được.");
+      const fallback =
+        mode === "register" ? "Không đăng ký được." : "Không đăng nhập được.";
+      setError(result.error.message || fallback);
       return;
     }
 

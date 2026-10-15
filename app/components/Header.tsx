@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { Suspense } from "react";
+import { HeaderAuth } from "../../features/auth/HeaderAuth";
 
 export function Header() {
   return (
@@ -8,12 +10,9 @@ export function Header() {
           Học tiếng Anh
         </Link>
         <div className="ml-auto flex items-center gap-2">
-          <Link href="/login" className="text-sm">
-            Đăng nhập
-          </Link>
-          <Link href="/register" className="text-sm">
-            Đăng ký
-          </Link>
+          <Suspense fallback={<span className="text-sm">…</span>}>
+            <HeaderAuth />
+          </Suspense>
         </div>
       </div>
     </header>
