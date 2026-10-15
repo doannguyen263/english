@@ -57,6 +57,10 @@ export function AuthForm({ mode }: AuthFormProps) {
       return;
     }
 
+    setName("");
+    setEmail("");
+    setPassword("");
+    setError(null);
     router.push("/");
     router.refresh();
   }
