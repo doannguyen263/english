@@ -19,6 +19,10 @@
   }
 }
 
+@theme { 
+  --color-primary: #1E40AF;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);

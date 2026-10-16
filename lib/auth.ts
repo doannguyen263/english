@@ -1,3 +1,5 @@
+import { cache } from "react";
+import { headers } from "next/headers";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
@@ -37,4 +39,11 @@ export const auth = betterAuth({
       getLocale: () => "vi",
     }),
   ],
+});
+
+// One session lookup per request, shared by header and footer.
+export const getSession = cache(async () => {
+  return auth.api.getSession({
+    headers: await headers(),
+  });
 });

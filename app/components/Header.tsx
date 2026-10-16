@@ -7,7 +7,7 @@ import { features } from "@/features/registry";
 export function Header() {
   return (
     <header className="sticky top-0 z-40 border-b border-black/10 bg-background/80 backdrop-blur-md dark:border-white/10">
-      <div className="mx-auto flex h-16 w-full max-w-5xl items-center gap-6 px-4">
+      <div className="mx-auto flex h-16 w-full max-w-7xl items-center gap-6 px-4">
         <Link href="/" className="flex shrink-0 items-center gap-2.5">
           <Image
             src="/logo.png"

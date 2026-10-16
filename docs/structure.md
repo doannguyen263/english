@@ -19,6 +19,7 @@ english/
       page.tsx                 /
       login/page.tsx           /login
       register/page.tsx        /register
+      account/page.tsx         /account
       structures/page.tsx      /structures
     api/auth/[...all]/route.ts Better Auth, /api/auth/*
     components/
@@ -27,7 +28,7 @@ english/
       ui/                      Button, PasswordInput
   features/                    UI và logic theo tính năng, không phải route
     registry.ts                danh sách hiện trên trang chủ
-    auth/                      form, header, Zod
+    auth/                      form, header, footer, account, Zod
     structures/                cấu trúc câu
   lib/
     db.ts                      Drizzle + MySQL
