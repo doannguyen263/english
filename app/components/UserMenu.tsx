@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useId, useRef, useState } from "react";
-import { SignOutButton } from "./SignOutButton";
+import { SignOutButton } from "@/app/(default)/account/SignOutButton";
 
 const itemClass =
   "flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm text-zinc-700 hover:bg-black/[.05] dark:text-zinc-200 dark:hover:bg-white/10";

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { StructureBox } from "@/features/structures/StructureBox";
+import { StructureBox } from "./StructureBox";
 
 export const metadata: Metadata = {
   title: "Cấu trúc câu",
@@ -7,7 +7,7 @@ export const metadata: Metadata = {
 
 export default function StructuresPage() {
   return (
-    <main className="mx-auto flex w-full max-w-xl flex-1 flex-col px-4 py-8">
+    <main className="mx-auto flex w-full max-w-7xl flex-1 flex-col px-4 py-8">
       <h1 className="text-2xl font-semibold">Cấu trúc câu</h1>
       <div className="mt-6">
         <StructureBox />

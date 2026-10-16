@@ -10,7 +10,7 @@ Stack: Next.js 16.4, React 19, Tailwind 4, TypeScript. Build `output: "standalon
 
 | Chỗ | Việc |
 | --- | --- |
-| `/` | Trang chủ liệt kê tính năng từ `features/registry.ts` |
+| `/` | Trang chủ liệt kê tính năng từ `app/components/registry.ts` |
 | Header | Link về trang chủ. `lang="vi"` trong `app/layout.tsx` |
 | `/structures` | Cấu trúc câu. Form nhập cấu trúc, giải thích, ví dụ (mỗi dòng một câu) |
 | `localStorage` | Khóa `sentence-structures`. Mất khi xóa dữ liệu trình duyệt hoặc đổi máy |

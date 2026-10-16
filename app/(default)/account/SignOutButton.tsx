@@ -1,16 +1,20 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
+const itemClass =
+  "flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm text-zinc-700 hover:bg-black/[.05] dark:text-zinc-200 dark:hover:bg-white/10";
+
 const variants = {
   pill: "rounded-full border border-black/15 px-3 py-1.5 text-sm hover:bg-black/[.04] dark:border-white/20 dark:hover:bg-white/10",
   link: "text-left text-sm text-zinc-600 hover:text-foreground dark:text-zinc-400",
-  menu: "flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm text-zinc-700 hover:bg-black/[.05] dark:text-zinc-200 dark:hover:bg-white/10",
+  menu: itemClass,
+  sidebar: itemClass,
 };
 
 export function SignOutButton({
   variant = "pill",
 }: {
-  variant?: "pill" | "link" | "menu";
+  variant?: "pill" | "link" | "menu" | "sidebar";
 }) {
   const router = useRouter();
   return (
@@ -23,7 +27,9 @@ export function SignOutButton({
         router.refresh();
       }}
     >
-      {variant === "menu" ? <span className="icon-exit"></span> : null}
+      {variant === "menu" || variant === "sidebar" ? (
+        <span className="icon-exit"></span>
+      ) : null}
       Đăng xuất
     </button>
   );

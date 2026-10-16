@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { AccountPanel } from "@/features/auth/AccountPanel";
+import { AccountPanel } from "./AccountPanel";
 
 export const metadata: Metadata = {
   title: "Quản lý tài khoản",

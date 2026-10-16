@@ -1,8 +1,8 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Suspense } from "react";
-import { HeaderAuth } from "@/features/auth/HeaderAuth";
-import { features } from "@/features/registry";
+import { HeaderAuth } from "./HeaderAuth";
+import { features } from "@/app/components/registry";
 
 export function Header() {
   return (
@@ -31,6 +31,8 @@ export function Header() {
               {feature.title}
             </Link>
           ))}
+          <Link href="/learn/vocabularies" className="rounded-full px-3 py-1.5 text-sm text-zinc-600 transition-colors hover:bg-black/[.05] hover:text-foreground dark:text-zinc-400 dark:hover:bg-white/10">Từ vựng</Link>
+          <Link href="/learn/videos" className="rounded-full px-3 py-1.5 text-sm text-zinc-600 transition-colors hover:bg-black/[.05] hover:text-foreground dark:text-zinc-400 dark:hover:bg-white/10">Video</Link>
         </nav>
 
         <div className="ml-auto">

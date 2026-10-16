@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { getSession } from "@/lib/auth";
-import { SignOutButton } from "./SignOutButton";
+import { SignOutButton } from "@/app/(default)/account/SignOutButton";
 
 const guestLinks = [
   { href: "/login", label: "Đăng nhập" },

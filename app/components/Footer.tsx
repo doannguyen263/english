@@ -1,8 +1,8 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Suspense } from "react";
-import { features } from "@/features/registry";
-import { FooterAccount } from "@/features/auth/FooterAccount";
+import { features } from "@/app/components/registry";
+import { FooterAccount } from "./FooterAccount";
 
 export function Footer() {
   return (

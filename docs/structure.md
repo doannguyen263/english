@@ -17,19 +17,21 @@ english/
     (default)/                 route group, không xuất hiện trên URL
       layout.tsx               Header + Footer
       page.tsx                 /
-      login/page.tsx           /login
+      login/                   /login, form đăng nhập và đăng ký
       register/page.tsx        /register
-      account/page.tsx         /account
-      structures/page.tsx      /structures
+      account/                 /account, panel, form, nút đăng xuất
+      structures/              /structures, màn hình nằm cạnh page
+      learn/videos/page.tsx    /learn/videos
+      learn/vocabularies/page.tsx  /learn/vocabularies
     api/auth/[...all]/route.ts Better Auth, /api/auth/*
     components/
       Header.tsx
+      HeaderAuth.tsx           nút đăng nhập hoặc menu user
+      UserMenu.tsx
       Footer.tsx
+      FooterAccount.tsx
+      registry.ts              danh sách link trên trang chủ, header, footer
       ui/                      Button, PasswordInput
-  features/                    UI và logic theo tính năng, không phải route
-    registry.ts                danh sách hiện trên trang chủ
-    auth/                      form, header, footer, account, Zod
-    structures/                cấu trúc câu
   lib/
     db.ts                      Drizzle + MySQL
     auth.ts                    Better Auth (server)
@@ -57,10 +59,8 @@ english/
 | --- | --- |
 | `app/(default)/` | Trang người dùng thấy, bọc Header và Footer |
 | `app/api/` | Route handler |
-| `app/components/` | Khung trang dùng chung |
+| `app/components/` | Khung trang: header, footer, menu user, danh sách link |
 | `app/components/ui/` | Control dùng lại (nút, ô nhập) |
-| `features/<tên>/` | Màn hình và schema của một tính năng |
-| `features/registry.ts` | Tính năng có link trên `/` |
 | `lib/` | Database, auth, thứ dùng nhiều chỗ |
 | `proxy.ts` | Cổng đăng nhập trước khi render. Trang cần session nằm trong `PROTECTED_PREFIXES` |
 | `public/` | Logo, icon, ảnh minh họa, ảnh bài viết tĩnh trong repo |
@@ -71,11 +71,11 @@ english/
 
 ## Thêm cái mới thì để đâu
 
-Trang có Header và Footer: `app/(default)/<route>/page.tsx`. Nếu trang bắt đăng nhập, thêm đường dẫn vào `PROTECTED_PREFIXES` trong `proxy.ts`.
+Trang của sản phẩm: `app/(default)/<route>/`. Video, từ vựng, cấu trúc câu nằm ở đây. Nếu trang bắt đăng nhập, thêm đường dẫn vào `PROTECTED_PREFIXES` trong `proxy.ts`.
+
+Phần dùng ở nhiều trang trong khung trang: `app/components/`. Link trên trang chủ, header và footer thêm vào `app/components/registry.ts`.
 
 API: `app/api/<tên>/route.ts`.
-
-Tính năng: thư mục `features/<tên>/`. Nếu có trên trang chủ, thêm một mục trong `features/registry.ts`.
 
 Ảnh tĩnh: `public/`, gọi bằng đường dẫn `/ten-file`.
 

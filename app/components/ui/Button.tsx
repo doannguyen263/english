@@ -6,8 +6,7 @@ type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
 };
 
 const variants = {
-  primary:
-    "bg-black text-white dark:bg-white dark:text-black",
+  primary: "bg-primary text-white",
   outline:
     "border border-black/15 dark:border-white/20",
 };

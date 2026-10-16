@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { features } from "@/features/registry";
+import { features } from "@/app/components/registry";
 
 export default function Home() {
   return (

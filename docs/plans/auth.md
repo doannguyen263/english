@@ -76,11 +76,11 @@ Xong khi bốn bảng có trong MySQL local.
 
 ### 6. Giao diện
 
-Giữ style hiện tại: `max-w-xl`, viền, hỗ trợ dark, nút cao khoảng 44px, giống form ở `features/structures/StructureBox.tsx`.
+Giữ style hiện tại: `max-w-xl`, viền, hỗ trợ dark, nút cao khoảng 44px, giống form ở `app/(default)/structures/StructureBox.tsx`.
 
 - `/register`: tên, email, mật khẩu, nút đăng ký, nút Google, link sang đăng nhập.
 - `/login`: email, mật khẩu, nút đăng nhập, nút Google, link sang đăng ký.
-- Một component client dùng chung cho hai trang, nằm trong `features/auth/`.
+- Một component client dùng chung cho hai trang, nằm trong `app/(default)/login/`.
 - Lỗi từ Better Auth hiện trên form (sai mật khẩu, email đã tồn tại, thiếu trường). Không log mật khẩu.
 - Đăng ký hoặc đăng nhập thành công thì về `/`.
 

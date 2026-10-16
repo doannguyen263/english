@@ -12,9 +12,8 @@ When a change adds, removes, renames, or moves a folder, route, feature module, 
 Skip generated and secret files: `node_modules/`, `.next/`, `next-env.d.ts`, `*.tsbuildinfo`, `.env.local`, `.env.production`.
 
 ```text
-# Adding /vocabulary
-# 1. app/(default)/vocabulary/page.tsx
-# 2. features/vocabulary/
-# 3. features/registry.ts if it is listed on the home page
-# 4. docs/structure.md — add the route and the feature folder
+# Adding /learn/vocabularies
+# 1. app/(default)/learn/vocabularies/page.tsx — screen stays beside the page
+# 2. app/components/registry.ts if the home page, header, or footer links to it
+# 3. docs/structure.md — add the route
 ```
