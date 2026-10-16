@@ -10,9 +10,9 @@ export async function HeaderAuth() {
 
   if (!session?.user) {
     return (
-      <div>
-        <Link href="/login">Login</Link>
-        <Link href="/register">Register</Link>
+      <div className="flex items-center gap-2">
+        <Link href="/login">Đăng nhập</Link>
+        <Link href="/register">Đăng ký</Link>
       </div>
     );
   }

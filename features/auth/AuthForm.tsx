@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
 import { loginSchema, registerSchema } from "./auth-schema";
 import { PasswordInput } from "@/app/components/ui/PasswordInput";
+import { Button } from "@/app/components/ui/Button";
 
 type AuthFormProps = {
   mode: "login" | "register";
@@ -13,7 +14,8 @@ type AuthFormProps = {
 export function AuthForm({ mode }: AuthFormProps) {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
-  const [pending, setPending] = useState(false);
+  const [pending, setPending] = useState<"submit" | "google" | null>(null);
+  const busy = pending !== null;
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -29,6 +31,7 @@ export function AuthForm({ mode }: AuthFormProps) {
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (pending) return;
     setError("");
 
     const schema = mode === "register" ? registerSchema : loginSchema;
@@ -41,41 +44,45 @@ export function AuthForm({ mode }: AuthFormProps) {
       setError(parsed.error.issues[0]?.message ?? "Dữ liệu không hợp lệ.");
       return;
     }
-    setPending(true);
-
-    const result =
-      mode === "register"
-        ? await authClient.signUp.email({
-            name: name.trim(),
-            email: email.trim(),
-            password,
-            callbackURL: "/",
-          })
-        : await authClient.signIn.email({
-            email: email.trim(),
-            password,
-            callbackURL: "/",
-          });
-
-    setPending(false);
-
-    if (result.error) {
-      const fallback =
-        mode === "register" ? "Không đăng ký được." : "Không đăng nhập được.";
-      setError(result.error.message || fallback);
-      return;
+    setPending("submit");
+    try {
+      const result =
+        mode === "register"
+          ? await authClient.signUp.email({
+              name: name.trim(),
+              email: email.trim(),
+              password,
+              callbackURL: "/",
+            })
+          : await authClient.signIn.email({
+              email: email.trim(),
+              password,
+              callbackURL: "/",
+            });
+      if (result.error) {
+        const fallback =
+          mode === "register" ? "Không đăng ký được." : "Không đăng nhập được.";
+        setError(result.error.message || fallback);
+        return;
+      }
+      setName("");
+      setEmail("");
+      setPassword("");
+      setError(null);
+      router.push("/");
+      router.refresh();
+    } finally {
+      setPending(null);
     }
-
-    setName("");
-    setEmail("");
-    setPassword("");
-    setError(null);
-    router.push("/");
-    router.refresh();
   }
 
   async function handleGoogle(event: React.FormEvent<HTMLButtonElement>) {
     event.preventDefault();
+    if (pending) return;
+    setPending("google");
+    setTimeout(() => {
+      setPending(null);
+    }, 500);
   }
 
   const inputClass =
@@ -107,32 +114,30 @@ export function AuthForm({ mode }: AuthFormProps) {
       </label>
 
       <label className="flex flex-col gap-1 text-sm">
-          <PasswordInput
+        <PasswordInput
           value={password}
           onChange={setPassword}
           autoComplete={
             mode === "register" ? "new-password" : "current-password"
           }
           className={inputClass}
-          disabled={pending}
+          disabled={!!pending}
         />
       </label>
       {error ? <p className="text-sm text-red-600">{error}</p> : null}
-      <button
-        type="submit"
-        disabled={pending}
-        className="h-11 rounded-md bg-black px-4 text-white dark:bg-white dark:text-black"
-      >
+
+      <Button type="submit" loading={pending === "submit"} disabled={busy}>
         {mode === "register" ? "Đăng ký" : "Đăng nhập"}
-      </button>
-      <button
+      </Button>
+      <Button
         type="button"
-        disabled={pending}
+        variant="outline"
+        loading={pending === "google"}
+        disabled={busy}
         onClick={handleGoogle}
-        className="h-11 rounded-md border border-black/15 px-4 dark:border-white/20"
       >
-        Google
-      </button>
+        {mode === "register" ? "Đăng ký bằng Google" : "Đăng nhập bằng Google"}
+      </Button>
 
       {mode === "register" ? (
         <Link href="/login" className="text-sm">
