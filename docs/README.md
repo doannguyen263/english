@@ -1,6 +1,6 @@
 # Học tiếng Anh
 
-File này là tổng quan. Đọc một lần để biết app đang có gì. Kế hoạch chi tiết nằm trong [plans](plans/).
+File này là tổng quan. Đọc một lần để biết app đang có gì. Cây thư mục nằm ở [structure.md](structure.md). Kế hoạch chi tiết nằm trong [plans](plans/).
 
 ## Đã làm
 

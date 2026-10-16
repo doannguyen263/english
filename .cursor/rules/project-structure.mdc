@@ -1,0 +1,20 @@
+---
+description: Keep docs/structure.md in sync when folders, routes, or features change
+alwaysApply: true
+---
+
+# Project structure
+
+`docs/structure.md` is the map of this repo. Read it before searching for where code or static assets live.
+
+When a change adds, removes, renames, or moves a folder, route, feature module, or top-level file that belongs on that map, update `docs/structure.md` in the same change. Update the tree and the "where new code goes" section together.
+
+Skip generated and secret files: `node_modules/`, `.next/`, `next-env.d.ts`, `*.tsbuildinfo`, `.env.local`, `.env.production`.
+
+```text
+# Adding /vocabulary
+# 1. app/(default)/vocabulary/page.tsx
+# 2. features/vocabulary/
+# 3. features/registry.ts if it is listed on the home page
+# 4. docs/structure.md — add the route and the feature folder
+```
