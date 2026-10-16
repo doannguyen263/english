@@ -26,6 +26,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="vi"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
+      <head>
+        <link rel="stylesheet" href="/fonts/icomoon/style.css" />
+      </head>
       <body className="min-h-full flex flex-col">
         
         {children}

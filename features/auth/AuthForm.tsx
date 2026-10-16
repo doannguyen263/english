@@ -6,6 +6,7 @@ import { authClient } from "@/lib/auth-client";
 import { loginSchema, registerSchema } from "./auth-schema";
 import { PasswordInput } from "@/app/components/ui/PasswordInput";
 import { Button } from "@/app/components/ui/Button";
+import Image from "next/image";
 
 type AuthFormProps = {
   mode: "login" | "register";
@@ -98,6 +99,7 @@ export function AuthForm({ mode }: AuthFormProps) {
             onChange={(event) => setName(event.target.value)}
             className={inputClass}
             autoComplete="name"
+            placeholder="Vui lòng nhập tên"
           />
         </label>
       ) : null}
@@ -110,6 +112,7 @@ export function AuthForm({ mode }: AuthFormProps) {
           onChange={(event) => setEmail(event.target.value)}
           className={inputClass}
           autoComplete="email"
+          placeholder="Vui lòng nhập email"
         />
       </label>
 
@@ -122,6 +125,7 @@ export function AuthForm({ mode }: AuthFormProps) {
           }
           className={inputClass}
           disabled={!!pending}
+          placeholder="Vui lòng nhập mật khẩu"
         />
       </label>
       {error ? <p className="text-sm text-red-600">{error}</p> : null}
@@ -135,19 +139,23 @@ export function AuthForm({ mode }: AuthFormProps) {
         loading={pending === "google"}
         disabled={busy}
         onClick={handleGoogle}
+        className="flex items-center gap-2"
       >
+        <Image src="/icons/google.svg" alt="Google" width={20} height={20} />
         {mode === "register" ? "Đăng ký bằng Google" : "Đăng nhập bằng Google"}
       </Button>
 
-      {mode === "register" ? (
-        <Link href="/login" className="text-sm">
-          Đã có tài khoản? Đăng nhập
-        </Link>
-      ) : (
-        <Link href="/register" className="text-sm">
-          Chưa có tài khoản? Đăng ký
-        </Link>
-      )}
+      <div className="flex items-center gap-2 justify-center">
+        {mode === "register" ? (
+          <Link href="/login" className="text-sm">
+            Đã có tài khoản? Đăng nhập
+          </Link>
+        ) : (
+          <Link href="/register" className="text-sm">
+            Chưa có tài khoản? Đăng ký
+          </Link>
+        )}
+      </div>
     </form>
   );
 }

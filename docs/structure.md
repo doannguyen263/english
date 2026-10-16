@@ -40,6 +40,7 @@ english/
     favicon.png
   drizzle/                     migration SQL
   drizzle.config.ts
+  proxy.ts                     cổng đăng nhập (middleware của Next.js 16)
   docs/
     README.md                  tổng quan sản phẩm
     structure.md               file này
@@ -61,6 +62,7 @@ english/
 | `features/<tên>/` | Màn hình và schema của một tính năng |
 | `features/registry.ts` | Tính năng có link trên `/` |
 | `lib/` | Database, auth, thứ dùng nhiều chỗ |
+| `proxy.ts` | Cổng đăng nhập trước khi render. Trang cần session nằm trong `PROTECTED_PREFIXES` |
 | `public/` | Logo, icon, ảnh minh họa, ảnh bài viết tĩnh trong repo |
 | `drizzle/` | SQL đã generate, không sửa tay |
 | `docs/plans/` | Plan trước khi code |
@@ -69,7 +71,7 @@ english/
 
 ## Thêm cái mới thì để đâu
 
-Trang có Header và Footer: `app/(default)/<route>/page.tsx`.
+Trang có Header và Footer: `app/(default)/<route>/page.tsx`. Nếu trang bắt đăng nhập, thêm đường dẫn vào `PROTECTED_PREFIXES` trong `proxy.ts`.
 
 API: `app/api/<tên>/route.ts`.
 

@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 
 export default function AccountPage() {
   return (
-    <main className="mx-auto flex w-full max-w-xl flex-1 flex-col px-4 py-8">
+    <main className="mx-auto flex w-full max-w-7xl flex-1 flex-col px-4 py-8">
       <h1 className="text-2xl font-semibold">Quản lý tài khoản</h1>
       <div className="mt-6">
         <Suspense fallback={<p className="text-sm text-zinc-500">…</p>}>

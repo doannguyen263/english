@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { getSession } from "@/lib/auth";
-import { SignOutButton } from "./SignOutButton";
+import { UserMenu } from "./UserMenu";
 
 export async function HeaderAuth() {
   const session = await getSession();
@@ -24,12 +24,5 @@ export async function HeaderAuth() {
     );
   }
 
-  return (
-    <div className="flex items-center gap-3">
-      <span className="max-w-40 truncate text-sm font-medium">
-        {session.user.name}
-      </span>
-      <SignOutButton />
-    </div>
-  );
+  return <UserMenu name={session.user.name} />;
 }
