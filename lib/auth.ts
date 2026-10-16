@@ -15,13 +15,6 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
   },
-  user: {
-    changeEmail: {
-      enabled: true,
-      // Local accounts are unverified because this app does not send mail.
-      updateEmailWithoutVerification: true,
-    },
-  },
   socialProviders: {
     google: {
       clientId: process.env.GOOGLE_CLIENT_ID ?? "",
@@ -32,6 +25,26 @@ export const auth = betterAuth({
     accountLinking: {
       enabled: true,
       trustedProviders: ["google"],
+      requireLocalEmailVerified: false,
+    },
+  },
+  rateLimit: {
+    enabled: true, // enable for development
+    window: 60, // second
+    max: 100, // any /api/auth/*
+    customRules: {
+      "/sign-up/email": {
+        window: 60,
+        max: 5,
+      },
+      "/sign-in/email": {
+        window: 60,
+        max: 10,
+      },
+      "/sign-in/social": {
+        window: 60,
+        max: 20,
+      },
     },
   },
   plugins: [

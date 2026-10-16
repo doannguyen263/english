@@ -77,13 +77,22 @@ export function AuthForm({ mode }: AuthFormProps) {
     }
   }
 
-  async function handleGoogle(event: React.FormEvent<HTMLButtonElement>) {
-    event.preventDefault();
+  async function handleGoogle() {
     if (pending) return;
+    setError(null);
     setPending("google");
-    setTimeout(() => {
+  
+    const result = await authClient.signIn.social({
+      provider: "google",
+      callbackURL: "/",
+      errorCallbackURL: mode === "register" ? "/register" : "/login",
+    });
+  
+    // Success leaves this page for Google. Only a failed start stays here.
+    if (result.error) {
+      setError(result.error.message || "Không đăng nhập Google được.");
       setPending(null);
-    }, 500);
+    }
   }
 
   const inputClass =

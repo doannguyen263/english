@@ -1,9 +1,7 @@
 import { z } from "zod";
-import { emailSchema } from "../login/auth-schema";
 
 export const profileSchema = z.object({
   name: z.string().trim().min(1, "Vui lòng nhập tên."),
-  email: emailSchema,
 });
 
 export const changePasswordSchema = z
