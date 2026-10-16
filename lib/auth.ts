@@ -6,6 +6,7 @@ import { nextCookies } from "better-auth/next-js";
 import { i18n, locales } from "@better-auth/i18n";
 import { db } from "@/lib/db";
 import * as schema from "@/lib/auth-schema";
+import { sendPasswordResetEmail } from "@/lib/mail";
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
@@ -14,6 +15,11 @@ export const auth = betterAuth({
   }),
   emailAndPassword: {
     enabled: true,
+    revokeSessionsOnPasswordReset: true,
+    resetPasswordTokenExpiresIn: 60 * 60,
+    sendResetPassword: async ({ user, url }) => {
+      await sendPasswordResetEmail({ to: user.email, url });
+    },
   },
   socialProviders: {
     google: {
@@ -45,6 +51,8 @@ export const auth = betterAuth({
         window: 60,
         max: 20,
       },
+      "/request-password-reset": { window: 60, max: 5 },
+      "/reset-password": { window: 60, max: 10 },
     },
   },
   plugins: [

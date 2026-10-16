@@ -19,6 +19,8 @@ english/
       page.tsx                 /
       login/                   /login, form đăng nhập và đăng ký
       register/page.tsx        /register
+      forgot-password/         /forgot-password, yêu cầu link đặt lại mật khẩu
+      reset-password/          /reset-password, đặt mật khẩu mới từ token
       account/                 /account, panel, form, nút đăng xuất
       structures/              /structures, màn hình nằm cạnh page
       learn/videos/page.tsx    /learn/videos
@@ -37,6 +39,7 @@ english/
     auth.ts                    Better Auth (server)
     auth-client.ts             Better Auth (client)
     auth-schema.ts             bảng user, session, account
+    mail.ts                    gửi email (reset mật khẩu qua SMTP)
   public/                      file tĩnh, URL bắt đầu bằng /
     logo.png
     favicon.png

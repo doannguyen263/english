@@ -81,13 +81,13 @@ export function AuthForm({ mode }: AuthFormProps) {
     if (pending) return;
     setError(null);
     setPending("google");
-  
+
     const result = await authClient.signIn.social({
       provider: "google",
       callbackURL: "/",
       errorCallbackURL: mode === "register" ? "/register" : "/login",
     });
-  
+
     // Success leaves this page for Google. Only a failed start stays here.
     if (result.error) {
       setError(result.error.message || "Không đăng nhập Google được.");
@@ -137,6 +137,13 @@ export function AuthForm({ mode }: AuthFormProps) {
           placeholder="Vui lòng nhập mật khẩu"
         />
       </label>
+
+      {mode === "login" ? (
+        <Link href="/forgot-password" className="self-end text-sm">
+          Quên mật khẩu?
+        </Link>
+      ) : null}
+
       {error ? <p className="text-sm text-red-600">{error}</p> : null}
 
       <Button type="submit" loading={pending === "submit"} disabled={busy}>
